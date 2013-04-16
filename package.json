@@ -1,0 +1,8 @@
+{
+    "name": "Chat-Mejorando.la",
+    "version": "0.0.1",
+    "dependencies": {
+        "mongodb": "*",
+        "socket.io": "*"
+    }
+}

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <title>Chat</title>
+  <style>
+  @import url(http://fonts.googleapis.com/css?family=Open+Sans);
+
+  #mensajes{background: #fff; border-radius: 6px; box-shadow: 3px 4px 5px #000000; border: 2px solid #FFBA42;height: 240px; display: inline-block; overflow-y: scroll; width: 40%;}
+  
+  body{ background: #008fd5; font-family: 'open sans'; Color: black;}
+
+  #mensaje{background: #eaf8fc; border-radius: 35px; border-width: 1px; border-style: solid; border-color: #c4d9df #a4c3ca #83afb7; width: 40%; height: 35px; border: 1px solid #a4c3ca; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25) inset, 0 1px 0 rgba(255, 255, 255, 1);}
+  </style>
+  <script type="text/javascript" src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
+</head>
+<body>
+
+<div id="contenedor">
+  <div id="mensajes"></div>
+  <form method="post" action="" onsubmit="return false;" />
+    <input type="text" name="mensaje" id="mensaje" value="" /><input id="cliente" name="cliente" value="" type="hidden" /><input type="submit" name="enviar" id="enviar" value="Enviar" onclick="enviarmensaje();" />
+  </form>
+</div>
+
+<script> 
+      // hacemos una conexion al servidor
+      var socket = io.connect(window.location.hostname, {port:window.location.port});
+      var nombreusuario;
+
+      socket.on('connect', function(cliente){
+          nombreusuario = prompt("Ingresa Tu Usuario : ");
+
+          socket.emit("establecerusuario", {nombreusuario:nombreusuario});
+      });
+
+      socket.on('mensaje', function(mensaje){
+          anexar('<strong>' + mensaje.usuario+ '</strong>' + ": " + mensaje.mensaje);
+      });
+
+      // enviamos un mensaje al servidor
+      function enviarmensaje(mensaje){
+          if(!mensaje){
+              // tomamos el mensaje de el input
+              var msj = $("#mensaje").val(); 
+              $("#mensaje").val('');
+          } else {
+              var msj = mensaje; 
+          }
+          console.log(msj);
+          if (msj.length > 0) {
+              console.log(msj);
+              if (socket.emit("mensaje", { mensaje : msj })) {
+                  anexar('<strong>' + nombreusuario + '</strong>' + ': ' + msj);
+              }
+          }
+      }
+
+      // muestra el mensaje en la pantalla
+      function anexar(mensaje){
+          $('div#mensajes').prepend('<div class="msj">' + mensaje + '</div>'); 
+      }
+
+    </script>
+ </body>
+ </html>
